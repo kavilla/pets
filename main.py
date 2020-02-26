@@ -17,6 +17,7 @@ def person_list():
 @app.route('/person/<int:id>', methods=['GET'])
 def person(id):
     result = Person.get(Person.id == id)
+    # TODO: handle not found
     return jsonify(model_to_dict(result))
 
 
@@ -103,14 +104,35 @@ def update_person(id):
         abort(409)
 
 
+@app.route('/person/<int:id>', methods=['DELETE'])
+def remove_person(id):
+    result = Person.get_or_none(Person.id == id)
+    partner = result.partner
+    Pet.update(owner=partner).where(Pet.owner == result).execute()
+
+    if partner is not None:
+        partner.partner = None
+        partner.save()
+
+    return jsonify(result.delete_instance())
+
+
 @app.route('/person/<int:person_id>/pet/<int:id>', methods=['GET'])
 def pet(person_id, id):
+    # TODO: handle person_id not found and id not found
     result = Pet.get(Pet.owner == person_id, Pet.id == id)
     return jsonify(model_to_dict(result))
 
 
+@app.route('/person/pet', methods=['GET'])
+def pet_list_null_owner():
+    results = Pet.select().where(Pet.owner.is_null()).execute()
+    return jsonify({'data': [model_to_dict(result) for result in results]})
+
+
 @app.route('/person/<int:person_id>/pet', methods=['GET'])
 def pet_list(person_id):
+    # TODO: handle person_id not found
     results = Pet.select().join(Person).where(Person.id == person_id).execute()
     return jsonify({'data': [model_to_dict(result) for result in results]})
 
