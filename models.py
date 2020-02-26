@@ -15,19 +15,6 @@ db = PostgresqlDatabase(
 )
 
 
-# Custom Exception
-class NotFoundException(Exception):
-    pass
-
-
-class InvalidRequestException(Exception):
-    pass
-
-
-class InternalServerErrorException(Exception):
-    pass
-
-
 # ORM Classes
 class Person(Model):
     class Meta:
@@ -46,3 +33,20 @@ class Pet(Model):
 
     name = TextField(column_name='name')
     owner = ForeignKeyField(Person, null=True, backref='pets', column_name='owner')
+
+
+# Custom Exceptions
+class ConflictException(Exception):
+    pass
+
+
+class NotFoundException(Exception):
+    pass
+
+
+class InvalidRequestException(Exception):
+    pass
+
+
+class InternalServerErrorException(Exception):
+    pass

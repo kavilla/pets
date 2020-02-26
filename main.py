@@ -1,8 +1,8 @@
 # import utils
 # if __name__ == '__main__':
 # utils._create_tables()
-from flask import Flask, jsonify, request
-from models import Person, Pet, InvalidRequestException
+from flask import Flask, jsonify, request, abort
+from models import Person, Pet, InvalidRequestException, NotFoundException, ConflictException
 from playhouse.shortcuts import model_to_dict
 
 app = Flask(__name__)
@@ -22,17 +22,85 @@ def person(id):
 
 @app.route('/person', methods=['POST'])
 def create_person():
-    data = request.get_json(force=True)
-    first_name = data['first_name']
-    last_name = data['last_name']
+    try:
+        data = request.get_json(force=True)
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        partner_id = data.get('partner_id')
+        partner = None
 
-    if first_name is None or last_name is None:
-        raise InvalidRequestException
+        if first_name is None or last_name is None:
+            raise InvalidRequestException
 
-    result = Person(first_name=first_name, last_name=last_name)
-    result.save()
+        if partner_id is not None:
+            partner = Person.get_or_none(Person.id == partner_id)
+            if partner is None:
+                raise NotFoundException
+            if partner.partner is not None:
+                raise ConflictException
 
-    return jsonify(model_to_dict(result))
+        result = Person(first_name=first_name, last_name=last_name, partner=partner)
+        result.save()
+
+        if partner is not None:
+            partner.partner = result
+            partner.save()
+
+        return jsonify(model_to_dict(result))
+    except InvalidRequestException as e:
+        app.logger.error(e)
+        abort(400)
+    except NotFoundException as e:
+        app.logger.error(e)
+        abort(404)
+    except ConflictException as e:
+        app.logger.error(e)
+        abort(409)
+
+
+@app.route('/person/<int:id>', methods=['PUT'])
+def update_person(id):
+    try:
+        result = Person.get_or_none(Person.id == id)
+        if result is None:
+            raise NotFoundException
+
+        data = request.get_json(force=True)
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        partner_id = data.get('partner_id')
+        partner = result.partner
+
+        if first_name is None or last_name is None:
+            raise InvalidRequestException
+
+        if partner_id is not None:
+            if partner is not None and partner_id != partner.id:
+                raise InvalidRequestException
+            if partner is None:
+                partner = Person.get_or_none(Person.id == partner_id)
+                if partner.partner is not None:
+                    raise ConflictException
+
+        result.first_name = first_name
+        result.last_name = last_name
+        result.partner = partner
+        result.save()
+
+        if partner is not None:
+            partner.partner = result
+            partner.save()
+
+        return jsonify(model_to_dict(result))
+    except InvalidRequestException as e:
+        app.logger.error(e)
+        abort(400)
+    except NotFoundException as e:
+        app.logger.error(e)
+        abort(404)
+    except ConflictException as e:
+        app.logger.error(e)
+        abort(409)
 
 
 @app.route('/person/<int:person_id>/pet/<int:id>', methods=['GET'])
