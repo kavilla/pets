@@ -1,9 +1,7 @@
-# import utils
-# if __name__ == '__main__':
-# utils._create_tables()
 from flask import Flask, jsonify, request, abort
-from models import Person, Pet, InvalidRequestException, NotFoundException, ConflictException
 from playhouse.shortcuts import model_to_dict
+
+from models import Person, Pet, InvalidRequestException, NotFoundException, ConflictException
 
 app = Flask(__name__)
 
@@ -139,17 +137,21 @@ def pet_list(person_id):
 
 @app.route('/person/<int:person_id>/pet', methods=['POST'])
 def create_pet(person_id):
-    owner = Person.get(Person.id == person_id)
-    data = request.get_json(force=True)
-    name = data['name']
+    try:
+        owner = Person.get(Person.id == person_id)
+        data = request.get_json(force=True)
+        name = data['name']
 
-    if name is None:
-        raise InvalidRequestException
+        if name is None:
+            raise InvalidRequestException
 
-    result = Pet(name=name, owner=owner)
-    result.save()
+        result = Pet(name=name, owner=owner)
+        result.save()
 
-    return jsonify(model_to_dict(result))
+        return jsonify(model_to_dict(result))
+    except InvalidRequestException as e:
+        app.logger.error(e)
+        abort(400)
 
 
 app.run()
