@@ -49,11 +49,12 @@ python utils.py _create_tables
 
 ## API
 
-- GET http://localhost:5000/person
+- GET http://localhost:5000/persons
 	- Successful : 200 (returns person list)
-- GET http://localhost:5000/person/{id}
-	- Successful: 200 (returns person with id)
-- POST http://localhost:5000/person
+- GET http://localhost:5000/persons/{person_id}
+	- Successful: 200 (returns person with person_id is id)
+	- Not Found: 404 (person with person_id does not exist)
+- POST http://localhost:5000/persons
 	- Create a person with a body:
 	```
 	{
@@ -66,7 +67,7 @@ python utils.py _create_tables
 	- Invalid request: 400 (missing first_name or last_name)
 	- Not Found: 404 (person with partner_id does not exist)
 	- Conflict: 409 (person with partner_id has a partner already)
-- PUT http://localhost:5000/person/{id}
+- PUT http://localhost:5000/persons/{person_id}
 	- Updates a person with a body:
 	```
 	{
@@ -79,15 +80,17 @@ python utils.py _create_tables
 	- Invalid request: 400 (missing first_name or last_name or if person is already married if the partner_id is not the existing partner's id)
 	- Not Found: 404 (person with id does not exist)
 	- Conflict: 409 (person with partner_id has a partner already)
-- DELETE http://localhost:5000/person/{id}
+- DELETE http://localhost:5000/persons/{person_id}
 	- Successful : 200 (returns row delete)
-- GET http://localhost:5000/person/{person_id}/pet
+- GET http://localhost:5000/persons/{person_id}/pets
 	- Successful : 200 (returns pet list for person)
-- GET http://localhost:5000/person/pet
+	- Not Found: 404 (person with person_id does not exist)
+- GET http://localhost:5000/persons/pets
 	- Successful : 200 (returns pet list for null owner)
-- GET http://localhost:5000/person/{person_id}/pet/{id}
+- GET http://localhost:5000/persons/{person_id}/pets/{pet_id}
 	- Successful : 200 (returns pet with id and person_id)
-- POST http://localhost:5000/person/{person_id}/pet
+	- Not Found: 404 (person with person_id does not exist or pet with pet_id does not exist)
+- POST http://localhost:5000/persons/{person_id}/pets
 	- Create a pet with a body:
 	```
 	{
@@ -96,6 +99,7 @@ python utils.py _create_tables
 	```
 	- Successful : 200 (returns created pet with owner with id that equals person_id)
 	- Invalid request: 400 (missing name)
+	- Not Found: 404 (person with person_id does not exist)
 
 ### Solution
 
@@ -113,11 +117,6 @@ python utils.py _create_tables
 - Pets names are written in stone but a person first name and last name can change.
 
 ## TODO
-
-- Handle not found for GET /person/{id}
-- Handle not found for GET /person/{person_id}/pet/{id}
-- Handle not found for GET /person/{person_id}/pet
-- Handle not found for POST /person/{person_id}/pet
 - Cleanup conditionals related to marriage
 - Add function comments for reusability
 - Return custom error message

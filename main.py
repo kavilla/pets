@@ -6,20 +6,26 @@ from models import Person, Pet, InvalidRequestException, NotFoundException, Conf
 app = Flask(__name__)
 
 
-@app.route('/person', methods=['GET'])
+@app.route('/persons', methods=['GET'])
 def person_list():
     results = Person.select().execute()
     return jsonify({'data': [model_to_dict(result) for result in results]})
 
 
-@app.route('/person/<int:id>', methods=['GET'])
-def person(id):
-    result = Person.get(Person.id == id)
-    # TODO: handle not found
-    return jsonify(model_to_dict(result))
+@app.route('/persons/<int:person_id>', methods=['GET'])
+def person(person_id):
+    try:
+        result = Person.get_or_none(Person.id == person_id)
+        if result is None:
+            raise NotFoundException
+
+        return jsonify(model_to_dict(result))
+    except NotFoundException as e:
+        app.logger.error(e)
+        abort(404)
 
 
-@app.route('/person', methods=['POST'])
+@app.route('/persons', methods=['POST'])
 def create_person():
     try:
         data = request.get_json(force=True)
@@ -57,10 +63,10 @@ def create_person():
         abort(409)
 
 
-@app.route('/person/<int:id>', methods=['PUT'])
-def update_person(id):
+@app.route('/persons/<int:person_id>', methods=['PUT'])
+def update_person(person_id):
     try:
-        result = Person.get_or_none(Person.id == id)
+        result = Person.get_or_none(Person.id == person_id)
         if result is None:
             raise NotFoundException
 
@@ -102,9 +108,12 @@ def update_person(id):
         abort(409)
 
 
-@app.route('/person/<int:id>', methods=['DELETE'])
-def remove_person(id):
-    result = Person.get_or_none(Person.id == id)
+@app.route('/persons/<int:person_id>', methods=['DELETE'])
+def remove_person(person_id):
+    result = Person.get_or_none(Person.id == person_id)
+    if result is None:
+        return jsonify(0)
+
     partner = result.partner
     Pet.update(owner=partner).where(Pet.owner == result).execute()
 
@@ -115,30 +124,46 @@ def remove_person(id):
     return jsonify(result.delete_instance())
 
 
-@app.route('/person/<int:person_id>/pet/<int:id>', methods=['GET'])
-def pet(person_id, id):
-    # TODO: handle person_id not found and id not found
-    result = Pet.get(Pet.owner == person_id, Pet.id == id)
-    return jsonify(model_to_dict(result))
+@app.route('/persons/<int:person_id>/pets/<int:pet_id>', methods=['GET'])
+def pet(person_id, pet_id):
+    try:
+        result = Pet.get_or_none(Pet.owner == person_id, Pet.id == pet_id)
+        if result is None:
+            raise NotFoundException
+
+        return jsonify(model_to_dict(result))
+    except NotFoundException as e:
+        app.logger.error(e)
+        abort(404)
 
 
-@app.route('/person/pet', methods=['GET'])
+@app.route('/persons/pets', methods=['GET'])
 def pet_list_null_owner():
     results = Pet.select().where(Pet.owner.is_null()).execute()
     return jsonify({'data': [model_to_dict(result) for result in results]})
 
 
-@app.route('/person/<int:person_id>/pet', methods=['GET'])
+@app.route('/persons/<int:person_id>/pets', methods=['GET'])
 def pet_list(person_id):
-    # TODO: handle person_id not found
-    results = Pet.select().join(Person).where(Person.id == person_id).execute()
-    return jsonify({'data': [model_to_dict(result) for result in results]})
+    try:
+        owner = Person.get_or_none(Person.id == person_id)
+        if owner is None:
+            raise NotFoundException
+
+        results = Pet.select().where(Pet.owner == person_id)
+        return jsonify({'data': [model_to_dict(result) for result in results]})
+    except NotFoundException as e:
+        app.logger.error(e)
+        abort(404)
 
 
-@app.route('/person/<int:person_id>/pet', methods=['POST'])
+@app.route('/persons/<int:person_id>/pets', methods=['POST'])
 def create_pet(person_id):
     try:
-        owner = Person.get(Person.id == person_id)
+        owner = Person.get_or_none(Person.id == person_id)
+        if owner is None:
+            raise NotFoundException
+
         data = request.get_json(force=True)
         name = data['name']
 
@@ -149,6 +174,9 @@ def create_pet(person_id):
         result.save()
 
         return jsonify(model_to_dict(result))
+    except NotFoundException as e:
+        app.logger.error(e)
+        abort(404)
     except InvalidRequestException as e:
         app.logger.error(e)
         abort(400)
