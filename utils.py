@@ -1,4 +1,5 @@
 from models import db, Person, Pet
+from flask import Response, json
 
 
 def _create_tables():
@@ -7,6 +8,10 @@ def _create_tables():
             Person,
             Pet
         ])
+
+
+def generate_response(json_object, code):
+    return Response(json.dumps(json_object), status=code, mimetype='application/json')
 
 
 if __name__ == '__main__':

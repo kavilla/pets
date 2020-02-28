@@ -63,7 +63,7 @@ python utils.py _create_tables
 		"partner_id" "optional"
 	}
 	```
-	- Successful : 200 (returns created person)
+	- Successful : 201 (returns created person)
 	- Invalid request: 400 (missing first_name or last_name)
 	- Not Found: 404 (person with partner_id does not exist)
 	- Conflict: 409 (person with partner_id has a partner already)
@@ -97,7 +97,7 @@ python utils.py _create_tables
 		"name": "required"
 	}
 	```
-	- Successful : 200 (returns created pet with owner with id that equals person_id)
+	- Successful : 201 (returns created pet with owner with id that equals person_id)
 	- Invalid request: 400 (missing name)
 	- Not Found: 404 (person with person_id does not exist)
 
@@ -119,10 +119,8 @@ python utils.py _create_tables
 ## TODO
 - Cleanup conditionals related to marriage
 - Add function comments for reusability
-- Return custom error message
 - Document request body for POSTs and PUTs
 - Document errors
-- Update POSTs to be 201
 - Update PUT person to a PATCH
 	- The partner_id being optional on a PUT is not correct if the behavior changes if you do pass it will try to modify it but if person is married. and you don't pass partner_id it won't divorce a person. This is bad for  PUT.
 - Create UI

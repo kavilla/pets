@@ -1,5 +1,6 @@
-from flask import Flask, jsonify, request, abort
+from flask import Flask, request, abort
 from playhouse.shortcuts import model_to_dict
+from utils import generate_response
 
 from models import Person, Pet, InvalidRequestException, NotFoundException, ConflictException
 
@@ -9,7 +10,8 @@ app = Flask(__name__)
 @app.route('/persons', methods=['GET'])
 def person_list():
     results = Person.select().execute()
-    return jsonify({'data': [model_to_dict(result) for result in results]})
+    response = generate_response({'data': [model_to_dict(result) for result in results]}, 200)
+    return response
 
 
 @app.route('/persons/<int:person_id>', methods=['GET'])
@@ -19,10 +21,12 @@ def person(person_id):
         if result is None:
             raise NotFoundException
 
-        return jsonify(model_to_dict(result))
+        response = generate_response(model_to_dict(result), 200)
     except NotFoundException as e:
         app.logger.error(e)
-        abort(404)
+        response = generate_response({'Message': 'Person not found'}, 404)
+
+    return response
 
 
 @app.route('/persons', methods=['POST'])
@@ -51,16 +55,18 @@ def create_person():
             partner.partner = result
             partner.save()
 
-        return jsonify(model_to_dict(result))
+        response = generate_response(model_to_dict(result), 201)
     except InvalidRequestException as e:
         app.logger.error(e)
-        abort(400)
+        response = generate_response({'Message': 'Invalid request'}, 400)
     except NotFoundException as e:
         app.logger.error(e)
-        abort(404)
+        response = generate_response({'Message': 'Partner not found'}, 404)
     except ConflictException as e:
         app.logger.error(e)
-        abort(409)
+        response = generate_response({'Message': 'Partner already married'}, 409)
+
+    return response
 
 
 @app.route('/persons/<int:person_id>', methods=['PUT'])
@@ -84,7 +90,7 @@ def update_person(person_id):
                 raise InvalidRequestException
             if partner is None:
                 partner = Person.get_or_none(Person.id == partner_id)
-                if partner.partner is not None:
+                if partner is not None and partner.partner is not None:
                     raise ConflictException
 
         result.first_name = first_name
@@ -96,23 +102,25 @@ def update_person(person_id):
             partner.partner = result
             partner.save()
 
-        return jsonify(model_to_dict(result))
+        response = generate_response(model_to_dict(result), 200)
     except InvalidRequestException as e:
         app.logger.error(e)
-        abort(400)
+        response = generate_response({'Message': 'Invalid request'}, 400)
     except NotFoundException as e:
         app.logger.error(e)
-        abort(404)
+        response = generate_response({'Message': 'Person not found'}, 404)
     except ConflictException as e:
         app.logger.error(e)
-        abort(409)
+        response = generate_response({'Message': 'Partner already married'}, 409)
+
+    return response
 
 
 @app.route('/persons/<int:person_id>', methods=['DELETE'])
 def remove_person(person_id):
     result = Person.get_or_none(Person.id == person_id)
     if result is None:
-        return jsonify(0)
+        return generate_response({'Message': 'No rows were removed.'}, 200)
 
     partner = result.partner
     Pet.update(owner=partner).where(Pet.owner == result).execute()
@@ -121,7 +129,7 @@ def remove_person(person_id):
         partner.partner = None
         partner.save()
 
-    return jsonify(result.delete_instance())
+    return generate_response({'Message': f'{result.delete_instance()} rows were removed.'}, 200)
 
 
 @app.route('/persons/<int:person_id>/pets/<int:pet_id>', methods=['GET'])
@@ -131,16 +139,19 @@ def pet(person_id, pet_id):
         if result is None:
             raise NotFoundException
 
-        return jsonify(model_to_dict(result))
+        response = generate_response(model_to_dict(result), 200)
     except NotFoundException as e:
         app.logger.error(e)
-        abort(404)
+        response = generate_response({'Message': 'Person or pet not found'}, 404)
+
+    return response
 
 
 @app.route('/persons/pets', methods=['GET'])
 def pet_list_null_owner():
     results = Pet.select().where(Pet.owner.is_null()).execute()
-    return jsonify({'data': [model_to_dict(result) for result in results]})
+    response = generate_response({'data': [model_to_dict(result) for result in results]}, 200)
+    return response
 
 
 @app.route('/persons/<int:person_id>/pets', methods=['GET'])
@@ -151,10 +162,12 @@ def pet_list(person_id):
             raise NotFoundException
 
         results = Pet.select().where(Pet.owner == person_id)
-        return jsonify({'data': [model_to_dict(result) for result in results]})
+        response = generate_response({'data': [model_to_dict(result) for result in results]}, 200)
     except NotFoundException as e:
         app.logger.error(e)
-        abort(404)
+        response = generate_response({'Message': 'Owner not found'}, 404)
+
+    return response
 
 
 @app.route('/persons/<int:person_id>/pets', methods=['POST'])
@@ -173,13 +186,15 @@ def create_pet(person_id):
         result = Pet(name=name, owner=owner)
         result.save()
 
-        return jsonify(model_to_dict(result))
+        response = generate_response(model_to_dict(result), 201)
     except NotFoundException as e:
         app.logger.error(e)
-        abort(404)
+        response = generate_response({'Message': 'Partner not found'}, 404)
     except InvalidRequestException as e:
         app.logger.error(e)
-        abort(400)
+        response = generate_response({'Message': 'Invalid request'}, 400)
+
+    return response
 
 
 app.run()
