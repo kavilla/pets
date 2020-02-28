@@ -1,13 +1,22 @@
-from flask import Flask, request, abort
+from flask import Flask, request
+from flasgger import Swagger, swag_from
 from playhouse.shortcuts import model_to_dict
 from utils import generate_response
 
 from models import Person, Pet, InvalidRequestException, NotFoundException, ConflictException
 
 app = Flask(__name__)
+app.config['SWAGGER'] = {
+    'title': 'Yogi API',
+    'description': 'Simple API for marrying partners and adopting pets.',
+    "termsOfService": None,
+    "version": "1.0.1"
+}
+swagger = Swagger(app)
 
 
 @app.route('/persons', methods=['GET'])
+@swag_from('.docs/person_list.yml')
 def person_list():
     results = Person.select().execute()
     response = generate_response({'data': [model_to_dict(result) for result in results]}, 200)
@@ -15,6 +24,7 @@ def person_list():
 
 
 @app.route('/persons/<int:person_id>', methods=['GET'])
+@swag_from('.docs/person.yml')
 def person(person_id):
     try:
         result = Person.get_or_none(Person.id == person_id)
@@ -30,6 +40,7 @@ def person(person_id):
 
 
 @app.route('/persons', methods=['POST'])
+@swag_from('.docs/create_person.yml')
 def create_person():
     try:
         data = request.get_json(force=True)
@@ -70,6 +81,7 @@ def create_person():
 
 
 @app.route('/persons/<int:person_id>', methods=['PUT'])
+@swag_from('.docs/update_person.yml')
 def update_person(person_id):
     try:
         result = Person.get_or_none(Person.id == person_id)
@@ -117,10 +129,11 @@ def update_person(person_id):
 
 
 @app.route('/persons/<int:person_id>', methods=['DELETE'])
+@swag_from('.docs/remove_person.yml')
 def remove_person(person_id):
     result = Person.get_or_none(Person.id == person_id)
     if result is None:
-        return generate_response({'Message': 'No rows were removed.'}, 200)
+        return generate_response({'Message': 'Number of rows removed: 0'}, 200)
 
     partner = result.partner
     Pet.update(owner=partner).where(Pet.owner == result).execute()
@@ -129,10 +142,11 @@ def remove_person(person_id):
         partner.partner = None
         partner.save()
 
-    return generate_response({'Message': f'{result.delete_instance()} rows were removed.'}, 200)
+    return generate_response({'Message': f'Number of rows removed: {result.delete_instance()}'}, 200)
 
 
 @app.route('/persons/<int:person_id>/pets/<int:pet_id>', methods=['GET'])
+@swag_from('.docs/pet.yml')
 def pet(person_id, pet_id):
     try:
         result = Pet.get_or_none(Pet.owner == person_id, Pet.id == pet_id)
@@ -148,6 +162,7 @@ def pet(person_id, pet_id):
 
 
 @app.route('/persons/pets', methods=['GET'])
+@swag_from('.docs/pet_list_null_owner.yml')
 def pet_list_null_owner():
     results = Pet.select().where(Pet.owner.is_null()).execute()
     response = generate_response({'data': [model_to_dict(result) for result in results]}, 200)
@@ -155,6 +170,7 @@ def pet_list_null_owner():
 
 
 @app.route('/persons/<int:person_id>/pets', methods=['GET'])
+@swag_from('.docs/pet_list.yml')
 def pet_list(person_id):
     try:
         owner = Person.get_or_none(Person.id == person_id)
@@ -171,6 +187,7 @@ def pet_list(person_id):
 
 
 @app.route('/persons/<int:person_id>/pets', methods=['POST'])
+@swag_from('.docs/create_pet.yml')
 def create_pet(person_id):
     try:
         owner = Person.get_or_none(Person.id == person_id)
@@ -189,7 +206,7 @@ def create_pet(person_id):
         response = generate_response(model_to_dict(result), 201)
     except NotFoundException as e:
         app.logger.error(e)
-        response = generate_response({'Message': 'Partner not found'}, 404)
+        response = generate_response({'Message': 'Owner not found'}, 404)
     except InvalidRequestException as e:
         app.logger.error(e)
         response = generate_response({'Message': 'Invalid request'}, 400)

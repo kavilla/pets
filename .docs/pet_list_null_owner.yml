@@ -1,0 +1,23 @@
+Get a list of existing pets for null owner
+---
+tags:
+      - pets
+responses:
+  200:
+    description: Returns a list of pets
+    examples:
+      application/json:
+        {
+          "data": [
+            {
+              "id": 1,
+              "name": "Koa",
+              "owner": null
+            },
+            {
+              "id": 2,
+              "name": "Marley",
+              "owner": null
+            }
+          ]
+        }

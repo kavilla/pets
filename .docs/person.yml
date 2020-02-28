@@ -1,0 +1,31 @@
+Get an existing person
+---
+tags:
+      - persons
+parameters:
+  - name: person_id
+    in: path
+    type: integer
+    required: true
+responses:
+  200:
+    description: Returns a person
+    examples:
+      application/json:
+        {
+          "first_name": "B",
+          "id": 3,
+          "last_name": "First",
+          "partner": {
+            "first_name": "A",
+            "id": 1,
+            "last_name": "First"
+          }
+        }
+  404:
+    description: Person does not exist
+    examples:
+      application/json:
+        {
+          "Message": "Person not found"
+        }

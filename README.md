@@ -119,8 +119,6 @@ python utils.py _create_tables
 ## TODO
 - Cleanup conditionals related to marriage
 - Add function comments for reusability
-- Document request body for POSTs and PUTs
-- Document errors
 - Update PUT person to a PATCH
 	- The partner_id being optional on a PUT is not correct if the behavior changes if you do pass it will try to modify it but if person is married. and you don't pass partner_id it won't divorce a person. This is bad for  PUT.
 - Create UI

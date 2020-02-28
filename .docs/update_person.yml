@@ -1,0 +1,61 @@
+Update an existing person
+---
+tags:
+      - persons
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: Person
+      required:
+        - first_name
+        - last_name
+      properties:
+        first_name:
+          type: string
+          description: Person's first name.
+          default: "first_name"
+        last_name:
+          type: string
+          description: Person's last name.
+          default: "last_name"
+        partner_id:
+          type: integer
+          description: Partner's ID.
+responses:
+  200:
+    description: Returns a updated person
+    examples:
+      application/json:
+        {
+          "first_name": "B",
+          "id": 3,
+          "last_name": "First",
+          "partner": {
+            "first_name": "A",
+            "id": 1,
+            "last_name": "First"
+          }
+        }
+  400:
+    description: Invalid request
+    examples:
+      application/json:
+        {
+          "Message": "Invalid request"
+        }
+  404:
+    description: Person not found
+    examples:
+      application/json:
+        {
+          "Message": "Person not found"
+        }
+  409:
+    description: Partner already married
+    examples:
+      application/json:
+        {
+          "Message": "Partner already married"
+        }

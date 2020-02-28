@@ -1,0 +1,45 @@
+Get a list of existing pets for an existing owner
+---
+tags:
+      - pets
+parameters:
+  - name: person_id
+    in: path
+    type: integer
+    required: true
+responses:
+  200:
+    description: Returns a list of pets
+    examples:
+      application/json:
+        {
+          "data": [
+            {
+              "id": 3,
+              "name": "Marley",
+              "owner": {
+                "first_name": "A",
+                "id": 9,
+                "last_name": "Sixth",
+                "partner": null
+              }
+            },
+            {
+              "id": 4,
+              "name": "Marley",
+              "owner": {
+                "first_name": "A",
+                "id": 9,
+                "last_name": "Sixth",
+                "partner": null
+              }
+            }
+          ]
+        }
+  404:
+    description: Person does not exist
+    examples:
+      application/json:
+        {
+          "Message": "Owner not found"
+        }

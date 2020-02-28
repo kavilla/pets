@@ -1,0 +1,17 @@
+Remove a person
+---
+tags:
+      - persons
+parameters:
+  - name: person_id
+    in: path
+    type: integer
+    required: true
+responses:
+  200:
+    description: Returns a number of rows removed
+    examples:
+      application/json:
+        {
+          "Message": "Number of rows removed: 1"
+        }

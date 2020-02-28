@@ -1,0 +1,54 @@
+Create a new pet for an existing person
+---
+tags:
+      - pets
+parameters:
+  - name: person_id
+    in: path
+    type: integer
+    required: true
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: Pet
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Pet's name
+          default: "name"
+responses:
+  201:
+    description: Returns a created pet
+    examples:
+      application/json:
+        {
+          "id": 5,
+          "name": "Marley",
+          "owner": {
+            "first_name": "B",
+            "id": 7,
+            "last_name": "Sixth",
+            "partner": {
+              "first_name": "A",
+              "id": 9,
+              "last_name": "Sixth"
+            }
+          }
+        }
+  400:
+    description: Invalid request
+    examples:
+      application/json:
+        {
+          "Message": "Invalid request"
+        }
+  404:
+    description: Owner not found
+    examples:
+      application/json:
+        {
+          "Message": "Owner not found"
+        }

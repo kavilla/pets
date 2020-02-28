@@ -1,0 +1,29 @@
+Get a list of existing persons
+---
+tags:
+      - persons
+responses:
+  200:
+    description: Returns a list of persons
+    examples:
+      application/json:
+        {
+          "data": [
+            {
+              "first_name": "B",
+              "id": 3,
+              "last_name": "First",
+              "partner": {
+                "first_name": "A",
+                "id": 1,
+                "last_name": "First"
+              }
+            },
+            {
+              "first_name": "A",
+              "id": 1,
+              "last_name": "First",
+              "partner": null
+            }
+          ]
+        }
