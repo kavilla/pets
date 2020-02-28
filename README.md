@@ -44,8 +44,8 @@ python utils.py _create_tables
   ```
   python main.py
   ```
-* Make requests to [http://localhost:5000](http://localhost:5000), personally I like using Postman
-	* Sorry, I realize there are libraries to create a CLI for this application but wanted to get the MVP out.
+* Make requests to [http://localhost:5000](http://localhost:5000), 
+	* Or use the swagger page here: [http://localhost:5000/apidocs/](http://localhost:5000/apidocs/)
 
 ## API
 
