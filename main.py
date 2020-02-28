@@ -89,7 +89,7 @@ def create_person():
     return response
 
 
-@app.route('/persons/<int:person_id>', methods=['PUT'])
+@app.route('/persons/<int:person_id>', methods=['PATCH'])
 @swag_from('.docs/update_person.yml')
 def update_person(person_id):
     """
@@ -101,30 +101,35 @@ def update_person(person_id):
             raise NotFoundException
 
         data = request.get_json(force=True)
+
         first_name = data.get('first_name')
+        if first_name is not None:
+            result.first_name = first_name
+
         last_name = data.get('last_name')
+        if last_name is not None:
+            result.last_name = last_name
+
         partner_id = data.get('partner_id')
-        partner = result.partner
-
-        if first_name is None or last_name is None:
-            raise InvalidRequestException
-
         if partner_id is not None:
-            if partner is not None and partner_id != partner.id:
-                raise InvalidRequestException
+            partner = result.partner
             if partner is None:
                 partner = Person.get_or_none(Person.id == partner_id)
-                if partner is not None and partner.partner is not None:
+                if partner is None:
+                    raise NotFoundException
+                if partner.partner is not None:
                     raise ConflictException
 
-        result.first_name = first_name
-        result.last_name = last_name
-        result.partner = partner
-        result.save()
+            if partner_id != partner.id:
+                raise InvalidRequestException
 
-        if partner is not None:
-            partner.partner = result
-            partner.save()
+            if partner is not None:
+                partner.partner = result
+                partner.save()
+
+            result.partner = partner
+
+        result.save()
 
         response = generate_response(model_to_dict(result), 200)
     except InvalidRequestException as e:
@@ -132,7 +137,7 @@ def update_person(person_id):
         response = generate_response({'Message': 'Invalid request'}, 400)
     except NotFoundException as e:
         app.logger.error(e)
-        response = generate_response({'Message': 'Person not found'}, 404)
+        response = generate_response({'Message': 'Person or partner not found'}, 404)
     except ConflictException as e:
         app.logger.error(e)
         response = generate_response({'Message': 'Partner already married'}, 409)

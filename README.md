@@ -67,18 +67,18 @@ python utils.py _create_tables
 	- Invalid request: 400 (missing first_name or last_name)
 	- Not Found: 404 (person with partner_id does not exist)
 	- Conflict: 409 (person with partner_id has a partner already)
-- PUT http://localhost:5000/persons/{person_id}
+- PATCH http://localhost:5000/persons/{person_id}
 	- Updates a person with a body:
 	```
 	{
-		"first_name": "required",
-		"last_name": "required",
+		"first_name": "optional",
+		"last_name": "optional",
 		"partner_id" "optional"
 	}
 	```
 	- Successful : 200 (returns updated person)
-	- Invalid request: 400 (missing first_name or last_name or if person is already married if the partner_id is not the existing partner's id)
-	- Not Found: 404 (person with id does not exist)
+	- Invalid request: 400 (if person is already married if the partner_id is not the existing partner's id)
+	- Not Found: 404 (person/partner with id does not exist)
 	- Conflict: 409 (person with partner_id has a partner already)
 - DELETE http://localhost:5000/persons/{person_id}
 	- Successful : 200 (returns row delete)
@@ -118,7 +118,4 @@ python utils.py _create_tables
 
 ## TODO
 - Cleanup conditionals related to marriage
-- Add function comments for reusability
-- Update PUT person to a PATCH
-	- The partner_id being optional on a PUT is not correct if the behavior changes if you do pass it will try to modify it but if person is married. and you don't pass partner_id it won't divorce a person. This is bad for  PUT.
 - Create UI

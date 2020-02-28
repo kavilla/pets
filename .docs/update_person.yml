@@ -3,14 +3,16 @@ Update an existing person
 tags:
       - persons
 parameters:
+  - name: person_id
+    in: path
+    type: integer
+    required: true
   - name: body
     in: body
     required: true
     schema:
       id: Person
       required:
-        - first_name
-        - last_name
       properties:
         first_name:
           type: string
