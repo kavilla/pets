@@ -10,6 +10,16 @@ responses:
         {
           "data": [
             {
+              "first_name": "A",
+              "id": 1,
+              "last_name": "First",
+              "partner": {
+                "first_name": "B",
+                "id": 3,
+                "last_name": "First"
+              }
+            },
+            {
               "first_name": "B",
               "id": 3,
               "last_name": "First",
@@ -21,8 +31,8 @@ responses:
             },
             {
               "first_name": "A",
-              "id": 1,
-              "last_name": "First",
+              "id": 2,
+              "last_name": "Second",
               "partner": null
             }
           ]

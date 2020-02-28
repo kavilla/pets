@@ -11,6 +11,9 @@ def _create_tables():
 
 
 def generate_response(json_object, code):
+    """
+    Return a Flask response with a JSON body.
+    """
     return Response(json.dumps(json_object), status=code, mimetype='application/json')
 
 
