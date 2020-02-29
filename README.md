@@ -111,7 +111,7 @@ python utils.py _create_tables
 ### Assumptions
 
 - People can't get remarried if currently married.
-- People are married until a person dies, even if try to PUT person and if you don't pass the partner_id and the person is married they won't get divorced.
+- People are married until a person dies, even if try to PATCH person and if you don't pass the partner_id and the person is married they won't get divorced.
 - People can have multiple pets.
 - Pets LIVE FOREVER.
 - Pets names are written in stone but a person first name and last name can change.

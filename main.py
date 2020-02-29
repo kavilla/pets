@@ -3,7 +3,7 @@ from flask import Flask, request
 from playhouse.shortcuts import model_to_dict
 
 from models import Person, Pet, InvalidRequestException, NotFoundException, ConflictException
-from utils import generate_response
+from utils import generate_response, generate_message_response, generate_error_response
 
 app = Flask(__name__)
 app.config['SWAGGER'] = {
@@ -35,12 +35,12 @@ def person(person_id):
     try:
         result = Person.get_or_none(Person.id == person_id)
         if result is None:
-            raise NotFoundException
+            raise NotFoundException('Person not found')
 
         response = generate_response(model_to_dict(result), 200)
-    except NotFoundException as e:
+    except Exception as e:
         app.logger.error(e)
-        response = generate_response({'Message': 'Person not found'}, 404)
+        response = generate_error_response(e)
 
     return response
 
@@ -58,15 +58,18 @@ def create_person():
         partner_id = data.get('partner_id')
         partner = None
 
-        if first_name is None or last_name is None:
-            raise InvalidRequestException
+        if first_name is None:
+            raise InvalidRequestException('First name is required')
+
+        if last_name is None:
+            raise InvalidRequestException('Last name is required')
 
         if partner_id is not None:
             partner = Person.get_or_none(Person.id == partner_id)
             if partner is None:
-                raise NotFoundException
+                raise NotFoundException('Partner not found')
             if partner.partner is not None:
-                raise ConflictException
+                raise ConflictException('Partner already married')
 
         result = Person(first_name=first_name, last_name=last_name, partner=partner)
         result.save()
@@ -76,15 +79,9 @@ def create_person():
             partner.save()
 
         response = generate_response(model_to_dict(result), 201)
-    except InvalidRequestException as e:
+    except Exception as e:
         app.logger.error(e)
-        response = generate_response({'Message': 'Invalid request'}, 400)
-    except NotFoundException as e:
-        app.logger.error(e)
-        response = generate_response({'Message': 'Partner not found'}, 404)
-    except ConflictException as e:
-        app.logger.error(e)
-        response = generate_response({'Message': 'Partner already married'}, 409)
+        response = generate_error_response(e)
 
     return response
 
@@ -98,7 +95,7 @@ def update_person(person_id):
     try:
         result = Person.get_or_none(Person.id == person_id)
         if result is None:
-            raise NotFoundException
+            raise NotFoundException('Person not found')
 
         data = request.get_json(force=True)
 
@@ -116,12 +113,12 @@ def update_person(person_id):
             if partner is None:
                 partner = Person.get_or_none(Person.id == partner_id)
                 if partner is None:
-                    raise NotFoundException
+                    raise NotFoundException('Partner not found')
                 if partner.partner is not None:
-                    raise ConflictException
+                    raise ConflictException('Partner already married')
 
             if partner_id != partner.id:
-                raise InvalidRequestException
+                raise InvalidRequestException('Partner does not match partner_id')
 
             if partner is not None:
                 partner.partner = result
@@ -132,15 +129,9 @@ def update_person(person_id):
         result.save()
 
         response = generate_response(model_to_dict(result), 200)
-    except InvalidRequestException as e:
+    except Exception as e:
         app.logger.error(e)
-        response = generate_response({'Message': 'Invalid request'}, 400)
-    except NotFoundException as e:
-        app.logger.error(e)
-        response = generate_response({'Message': 'Person or partner not found'}, 404)
-    except ConflictException as e:
-        app.logger.error(e)
-        response = generate_response({'Message': 'Partner already married'}, 409)
+        response = generate_error_response(e)
 
     return response
 
@@ -153,7 +144,7 @@ def remove_person(person_id):
     """
     result = Person.get_or_none(Person.id == person_id)
     if result is None:
-        return generate_response({'Message': 'Number of rows removed: 0'}, 200)
+        return generate_message_response('Number of rows removed: 0', 200)
 
     partner = result.partner
     Pet.update(owner=partner).where(Pet.owner == result).execute()
@@ -162,7 +153,7 @@ def remove_person(person_id):
         partner.partner = None
         partner.save()
 
-    return generate_response({'Message': f'Number of rows removed: {result.delete_instance()}'}, 200)
+    return generate_message_response(f'Number of rows removed: {result.delete_instance()}', 200)
 
 
 @app.route('/persons/<int:person_id>/pets/<int:pet_id>', methods=['GET'])
@@ -174,12 +165,12 @@ def pet(person_id, pet_id):
     try:
         result = Pet.get_or_none(Pet.owner == person_id, Pet.id == pet_id)
         if result is None:
-            raise NotFoundException
+            raise NotFoundException('Person and/or pet not found')
 
         response = generate_response(model_to_dict(result), 200)
-    except NotFoundException as e:
+    except Exception as e:
         app.logger.error(e)
-        response = generate_response({'Message': 'Person or pet not found'}, 404)
+        response = generate_error_response(e)
 
     return response
 
@@ -204,13 +195,13 @@ def pet_list(person_id):
     try:
         owner = Person.get_or_none(Person.id == person_id)
         if owner is None:
-            raise NotFoundException
+            raise NotFoundException('Owner not found')
 
         results = Pet.select().where(Pet.owner == person_id)
         response = generate_response({'data': [model_to_dict(result) for result in results]}, 200)
-    except NotFoundException as e:
+    except Exception as e:
         app.logger.error(e)
-        response = generate_response({'Message': 'Owner not found'}, 404)
+        response = generate_error_response(e)
 
     return response
 
@@ -224,24 +215,21 @@ def create_pet(person_id):
     try:
         owner = Person.get_or_none(Person.id == person_id)
         if owner is None:
-            raise NotFoundException
+            raise NotFoundException('Owner not found')
 
         data = request.get_json(force=True)
-        name = data['name']
+        name = data.get('name')
 
         if name is None:
-            raise InvalidRequestException
+            raise InvalidRequestException('Name is required')
 
         result = Pet(name=name, owner=owner)
         result.save()
 
         response = generate_response(model_to_dict(result), 201)
-    except NotFoundException as e:
+    except Exception as e:
         app.logger.error(e)
-        response = generate_response({'Message': 'Owner not found'}, 404)
-    except InvalidRequestException as e:
-        app.logger.error(e)
-        response = generate_response({'Message': 'Invalid request'}, 400)
+        response = generate_error_response(e)
 
     return response
 

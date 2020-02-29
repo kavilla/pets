@@ -35,5 +35,5 @@ responses:
     examples:
       application/json:
         {
-          "Message": "Person or pet not found"
+          "Message": "Person and/or pet not found"
         }
