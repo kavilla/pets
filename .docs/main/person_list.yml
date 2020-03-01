@@ -4,21 +4,11 @@ tags:
       - persons
 responses:
   200:
-    description: Returns a list of persons
+    description: Returns a list of persons ordered by descending.
     examples:
       application/json:
         {
           "data": [
-            {
-              "first_name": "A",
-              "id": 1,
-              "last_name": "First",
-              "partner": {
-                "first_name": "B",
-                "id": 3,
-                "last_name": "First"
-              }
-            },
             {
               "first_name": "B",
               "id": 3,
@@ -34,6 +24,16 @@ responses:
               "id": 2,
               "last_name": "Second",
               "partner": null
+            },
+            {
+              "first_name": "A",
+              "id": 1,
+              "last_name": "First",
+              "partner": {
+                "first_name": "B",
+                "id": 3,
+                "last_name": "First"
+              }
             }
           ]
         }

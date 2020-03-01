@@ -1,3 +1,5 @@
+import os
+
 from peewee import ForeignKeyField
 from peewee import Model
 from peewee import PostgresqlDatabase
@@ -19,7 +21,7 @@ db = PostgresqlDatabase(
 class Person(Model):
     class Meta:
         database = db
-        table_name = settings.PERSON_TABLE
+        table_name = settings.PERSON_TABLE + ('_TEST' if os.environ.get('TEST') else '')
 
     first_name = TextField(column_name='first_name')
     last_name = TextField(column_name='last_name')
@@ -29,7 +31,7 @@ class Person(Model):
 class Pet(Model):
     class Meta:
         database = db
-        table_name = settings.PET_TABLE
+        table_name = settings.PET_TABLE + ('_TEST' if os.environ.get('TEST') else '')
 
     name = TextField(column_name='name')
     owner = ForeignKeyField(Person, null=True, backref='pets', column_name='owner')

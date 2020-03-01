@@ -46,6 +46,13 @@ python utils.py _create_tables
   ```
 * Make requests to [http://localhost:5000](http://localhost:5000), 
 	* Or use the swagger page here: [http://localhost:5000/apidocs/](http://localhost:5000/apidocs/)
+* Run tests by running:
+  ```
+  python -m unittest discover
+  ```
+    * Then kill the process (for Windows: ctrl + c)
+        * I wish I can figure out how to start the tests automatically
+
 
 ## API
 

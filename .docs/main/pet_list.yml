@@ -9,13 +9,13 @@ parameters:
     required: true
 responses:
   200:
-    description: Returns a list of pets
+    description: Returns a list of pets ordered by descending.
     examples:
       application/json:
         {
           "data": [
             {
-              "id": 3,
+              "id": 4,
               "name": "Marley",
               "owner": {
                 "first_name": "A",
@@ -25,7 +25,7 @@ responses:
               }
             },
             {
-              "id": 4,
+              "id": 3,
               "name": "Marley",
               "owner": {
                 "first_name": "A",

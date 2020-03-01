@@ -4,19 +4,19 @@ tags:
       - pets
 responses:
   200:
-    description: Returns a list of pets
+    description: Returns a list of pets ordered by descending.
     examples:
       application/json:
         {
           "data": [
             {
-              "id": 1,
-              "name": "Koa",
+              "id": 2,
+              "name": "Marley",
               "owner": null
             },
             {
-              "id": 2,
-              "name": "Marley",
+              "id": 1,
+              "name": "Koa",
               "owner": null
             }
           ]

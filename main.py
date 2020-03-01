@@ -16,18 +16,18 @@ swagger = Swagger(app)
 
 
 @app.route('/persons', methods=['GET'])
-@swag_from('.docs/person_list.yml')
+@swag_from('.docs/main/person_list.yml')
 def person_list():
     """
     Get a list of persons.
     """
-    results = Person.select().execute()
+    results = Person.select().order_by(Person.id.desc()).execute()
     response = generate_response({'data': [model_to_dict(result) for result in results]}, 200)
     return response
 
 
 @app.route('/persons/<int:person_id>', methods=['GET'])
-@swag_from('.docs/person.yml')
+@swag_from('.docs/main/person.yml')
 def person(person_id):
     """
     Get an existing person.
@@ -46,7 +46,7 @@ def person(person_id):
 
 
 @app.route('/persons', methods=['POST'])
-@swag_from('.docs/create_person.yml')
+@swag_from('.docs/main/create_person.yml')
 def create_person():
     """
     Create a person and marries partners if eligible.
@@ -87,7 +87,7 @@ def create_person():
 
 
 @app.route('/persons/<int:person_id>', methods=['PATCH'])
-@swag_from('.docs/update_person.yml')
+@swag_from('.docs/main/update_person.yml')
 def update_person(person_id):
     """
     Update a person and marries partners if eligible.
@@ -137,7 +137,7 @@ def update_person(person_id):
 
 
 @app.route('/persons/<int:person_id>', methods=['DELETE'])
-@swag_from('.docs/remove_person.yml')
+@swag_from('.docs/main/remove_person.yml')
 def remove_person(person_id):
     """
     Remove a person and transfers pets to partner or null partner if not married.
@@ -157,7 +157,7 @@ def remove_person(person_id):
 
 
 @app.route('/persons/<int:person_id>/pets/<int:pet_id>', methods=['GET'])
-@swag_from('.docs/pet.yml')
+@swag_from('.docs/main/pet.yml')
 def pet(person_id, pet_id):
     """
     Get an existing pet from an existing owner.
@@ -176,18 +176,18 @@ def pet(person_id, pet_id):
 
 
 @app.route('/persons/pets', methods=['GET'])
-@swag_from('.docs/pet_list_null_owner.yml')
+@swag_from('.docs/main/pet_list_null_owner.yml')
 def pet_list_null_owner():
     """
     Get a list of pets from null owner.
     """
-    results = Pet.select().where(Pet.owner.is_null()).execute()
+    results = Pet.select().where(Pet.owner.is_null()).order_by(Pet.id.desc()).execute()
     response = generate_response({'data': [model_to_dict(result) for result in results]}, 200)
     return response
 
 
 @app.route('/persons/<int:person_id>/pets', methods=['GET'])
-@swag_from('.docs/pet_list.yml')
+@swag_from('.docs/main/pet_list.yml')
 def pet_list(person_id):
     """
     Get a list of pets from an existing owner.
@@ -197,7 +197,7 @@ def pet_list(person_id):
         if owner is None:
             raise NotFoundException('Owner not found')
 
-        results = Pet.select().where(Pet.owner == person_id)
+        results = Pet.select().where(Pet.owner == person_id).order_by(Pet.id.desc()).execute()
         response = generate_response({'data': [model_to_dict(result) for result in results]}, 200)
     except Exception as e:
         app.logger.error(e)
@@ -207,7 +207,7 @@ def pet_list(person_id):
 
 
 @app.route('/persons/<int:person_id>/pets', methods=['POST'])
-@swag_from('.docs/create_pet.yml')
+@swag_from('.docs/main/create_pet.yml')
 def create_pet(person_id):
     """
     Create a pet for an existing owner.

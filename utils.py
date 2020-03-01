@@ -1,13 +1,18 @@
-from models import db, Person, Pet, InvalidRequestException, NotFoundException, ConflictException
 from flask import Response, json
+
+from models import db, Person, Pet, InvalidRequestException, NotFoundException, ConflictException
+
+MODELS = [Person, Pet]
 
 
 def _create_tables():
     with db:
-        db.create_tables([
-            Person,
-            Pet
-        ])
+        db.create_tables(MODELS)
+
+
+def _drop_tables():
+    with db:
+        db.drop_tables(MODELS)
 
 
 def generate_response(json_object, code):
