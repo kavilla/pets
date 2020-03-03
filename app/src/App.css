@@ -1,0 +1,87 @@
+.app-modal-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.app-modal {
+  display: flex;
+  flex-direction: column;
+  width: 50em;
+  max-height: 50em;
+  background: white;
+  padding: 2em;
+  border-radius: 0.75em;
+  box-shadow: 0.25em 0.5em 0.75em rgba(0, 0, 0, 0.55);
+}
+
+.app-modal-close-button-container {
+  width: 100%;
+  text-align: right;
+}
+
+.app-modal-close-button {
+  height: 2.5em;
+  width: 2.5em;
+  border-radius: 50%;
+  border: 0.05em solid lightgray;
+  color: lightgray;
+}
+
+.app-modal-preheader {
+  color: lightgray;
+}
+
+.app-modal-subheader {
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.app-modal-item {
+  margin-bottom: 0.25em;
+}
+
+.app-modal input[type='text'] {
+  margin-bottom: 0.5em;
+}
+
+.app-modal textarea {
+  resize: none;
+  margin-bottom: 0.5em;
+}
+
+.app-modal .checkbox-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.app-modal .checkbox {
+  height: 1em;
+  flex: 1;
+  margin-top: 0.3em;
+}
+
+.app-modal .checkbox:focus {
+  box-shadow: none;
+}
+
+.app-modal .checkbox-label {
+  flex: 15;
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+.app-modal .img-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}

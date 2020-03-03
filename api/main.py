@@ -1,11 +1,13 @@
 from flasgger import Swagger, swag_from
 from flask import Flask, request
+from flask_cors import CORS
 from playhouse.shortcuts import model_to_dict
 
 from models import Person, Pet, InvalidRequestException, NotFoundException, ConflictException
 from utils import generate_response, generate_message_response, generate_error_response
 
 app = Flask(__name__)
+CORS(app, resources={r"*": {"origins": "*"}})
 app.config['SWAGGER'] = {
     'title': 'Pet API',
     'description': 'Simple API for marrying partners and adopting pets.',

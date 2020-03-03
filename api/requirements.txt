@@ -12,3 +12,4 @@ requests==2.22.0
 urllib3==1.25.7
 Werkzeug==0.16.0
 flasgger==0.9.4
+flask-cors==3.0.8

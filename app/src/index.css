@@ -1,0 +1,62 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.router {
+  display: flex;
+}
+
+.router-menu {
+  display: flex;
+  flex-direction: column;
+  border-right: 0.05em solid;
+  background-color: rgb(41, 41, 52);
+  box-shadow: 0.1em 0em 0.5em #888;
+}
+
+.router-menu-header {
+  color: white;
+  padding: 1.25em;
+  font-weight: bold;
+}
+
+.router-link {
+  color: white;
+  display: block;
+  padding: 0.1em 1em;
+  border: 0.0025em solid;
+  border-bottom: 0;
+  border-right: 0;
+  border-left: 0;
+  background-color: rgb(41, 41, 52);
+}
+
+.router .router-link:hover {
+  text-decoration: none;
+  background: rgb(71, 71, 82);
+}
+
+.router .router-link-active {
+  background: white;
+  color: black;
+  margin-right: -0.75em;
+  border: none;
+}
+
+.router .router-link-active:hover {
+  background: white;
+  text-decoration: underline;
+}
+
+.router .router-view {
+  flex: 1;
+  height: 100vh;
+}

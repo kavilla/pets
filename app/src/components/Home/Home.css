@@ -1,0 +1,52 @@
+.home {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 0.25em 1.25em;
+}
+
+.home-non-body {
+  width: 100%;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.home-non-body-item {
+  margin: 0.25em;
+}
+
+.home-body {
+  flex: 1;
+  overflow-y: auto;
+  background: lightgray;
+}
+
+.filter-container {
+  display: flex;
+  flex-direction: row;
+  max-width: 22em;
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.filter-search-bar {
+  border-radius: 4em;
+}
+
+.page-index-container {
+  display: flex;
+  flex-direction: row;
+  max-width: 18em;
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.page-index {
+  font-size: 1rem;
+  display: block;
+  line-height: 1.5;
+  padding: 0.275rem 0.75rem;
+  width: 12em;
+  text-align: center;
+}
