@@ -1,10 +1,9 @@
 import React from 'react';
 import { Button, FormGroup, FormControl, FormLabel } from 'react-bootstrap';
+import { UserCard } from 'react-ui-cards';
 import './Home.css';
 import './../../App.css';
 import PersonService from '../../services/PersonService';
-import Gallery from 'react-photo-gallery';
-import Draggable from 'react-draggable';
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -63,7 +62,7 @@ export default class Home extends React.Component {
       });
   };
 
-  handlePhotoClick = (_, options) => {
+  handlePersonClick = (_, options) => {
     this.setState(() => ({
       showModal: true,
       selectedImage: options.photo,
@@ -136,21 +135,29 @@ export default class Home extends React.Component {
     );
 
     const body =
-      !this.state.isLoading && this.state.persons.length > 0 ? (
-        <Draggable
-          axis="x"
-          handle=".handle"
-          defaultPosition={{ x: 0, y: 0 }}
-          position={null}
-          grid={[25, 25]}
-          scale={1}
-          onStart={this.handleStart}
-          onDrag={this.handleDrag}
-          onStop={this.handleStop}
-        >
-          <Gallery photos={this.state.persons} onClick={this.handlePhotoClick} />
-        </Draggable>
-      ) : null;
+      !this.state.isLoading && this.state.persons.length > 0
+        ? this.state.persons.map(person => {
+            return (
+              <UserCard
+                float
+                className="home-body-item"
+                header="https://venngage-wordpress.s3.amazonaws.com/uploads/2018/09/Colorful-Geometric-Simple-Background-Image.jpg"
+                avatar={person.src}
+                name={person.name}
+                stats={[
+                  {
+                    name: 'married?',
+                    value: person.partnerId !== null ? 'Yes' : 'No',
+                  },
+                  {
+                    name: 'pets',
+                    value: 3,
+                  },
+                ]}
+              />
+            );
+          })
+        : null;
 
     const imageModal =
       this.state.showModal && this.state.selectedImage !== null ? (

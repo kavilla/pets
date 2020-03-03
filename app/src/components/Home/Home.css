@@ -20,6 +20,13 @@
   flex: 1;
   overflow-y: auto;
   background: lightgray;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.home-body-item {
+  height: 350px;
 }
 
 .filter-container {
