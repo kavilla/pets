@@ -4,6 +4,7 @@ import { UserCard } from 'react-ui-cards';
 import './Home.css';
 import './../../App.css';
 import PersonService from '../../services/PersonService';
+import PetService from '../../services/PetService';
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -19,8 +20,9 @@ export default class Home extends React.Component {
       currentPageIndex: 0,
       isLoading: true,
       persons: [],
+      pets: [],
       showModal: false,
-      selectedImage: null,
+      selectedPerson: null,
     };
 
     PersonService.getPersons().then(persons => {
@@ -62,17 +64,21 @@ export default class Home extends React.Component {
       });
   };
 
-  handlePersonClick = (_, options) => {
-    this.setState(() => ({
-      showModal: true,
-      selectedImage: options.photo,
-    }));
+  handlePersonClick = person => {
+    PetService.getPets(person).then(resp => {
+      this.setState(() => ({
+        showModal: true,
+        selectedPerson: person,
+        pets: resp,
+      }));
+    });
   };
 
   handleHideModal = () => {
     this.setState(() => ({
       showModal: false,
-      selectedImage: null,
+      selectedPerson: null,
+      pets: [],
     }));
   };
 
@@ -141,8 +147,8 @@ export default class Home extends React.Component {
               <UserCard
                 float
                 className="home-body-item"
-                header="https://venngage-wordpress.s3.amazonaws.com/uploads/2018/09/Colorful-Geometric-Simple-Background-Image.jpg"
-                avatar={person.src}
+                header={person.header}
+                avatar={person.avatar}
                 name={person.name}
                 stats={[
                   {
@@ -154,13 +160,25 @@ export default class Home extends React.Component {
                     value: 3,
                   },
                 ]}
+                onClick={() => this.handlePersonClick(person)}
               />
             );
           })
         : null;
 
+    const petsDiv =
+      this.state.pets.length > 0
+        ? this.state.pets.map(pet => {
+            return (
+              <div>
+                <span>{pet.name}</span>
+              </div>
+            );
+          })
+        : null;
+
     const imageModal =
-      this.state.showModal && this.state.selectedImage !== null ? (
+      this.state.showModal && this.state.selectedPerson !== null ? (
         <div className="app-modal-container">
           <div className="app-modal">
             <div className="app-modal-close-button-container">
@@ -168,29 +186,13 @@ export default class Home extends React.Component {
                 X
               </Button>
             </div>
-            <h5 className="app-modal-item">Source: {this.state.selectedImage.src}</h5>
-            <span className="app-modal-item">
-              ({this.state.selectedImage.width} x {this.state.selectedImage.height})
-            </span>
-            <FormGroup controlId="isGray" className="app-modal-item checkbox-container">
-              <FormControl
-                value={this.state.selectedImage.isGray}
-                onChange={event => this.handleChange(event, this.state.selectedImage)}
-                type="checkbox"
-                className="checkbox"
-              />
-              <FormLabel className="checkbox-label">Show in grayscale?</FormLabel>
-            </FormGroup>
+            <h5 className="app-modal-item">
+              {this.state.selectedPerson.firstName} {this.state.selectedPerson.lastName}
+            </h5>
             <div className="app-modal-item img-container">
-              <img
-                src={
-                  this.state.selectedImage.isGray
-                    ? this.state.selectedImage.src + '?grayscale'
-                    : this.state.selectedImage.src
-                }
-                alt={this.state.selectedImage.id}
-              />
+              <img src={this.state.selectedPerson.avatar} alt={this.state.selectedPerson.avatar} />
             </div>
+            <div>{petsDiv}</div>
           </div>
         </div>
       ) : null;

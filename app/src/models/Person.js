@@ -5,6 +5,8 @@ export default class PersonModel {
     this.lastName = lastName;
     this.name = firstName + ' ' + lastName;
     this.partnerId = partnerId;
-    this.src = 'https://image.flaticon.com/icons/png/128/10/10522.png';
+    this.avatar = 'https://image.flaticon.com/icons/png/128/10/10522.png';
+    this.header =
+      'https://venngage-wordpress.s3.amazonaws.com/uploads/2018/09/Colorful-Geometric-Simple-Background-Image.jpg';
   }
 }
