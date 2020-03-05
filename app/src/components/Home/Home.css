@@ -29,6 +29,10 @@
   height: 350px;
 }
 
+.home-body-item:hover {
+  cursor: pointer;
+}
+
 .filter-container {
   display: flex;
   flex-direction: row;
@@ -56,4 +60,16 @@
   padding: 0.275rem 0.75rem;
   width: 12em;
   text-align: center;
+}
+
+.pet-container {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 1em;
+}
+
+.pet-container img {
+  height: 5em;
+  width: 5em;
 }

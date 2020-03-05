@@ -152,12 +152,12 @@ export default class Home extends React.Component {
                 name={person.name}
                 stats={[
                   {
-                    name: 'married?',
-                    value: person.partnerId !== null ? 'Yes' : 'No',
+                    name: 'id',
+                    value: person.id,
                   },
                   {
-                    name: 'pets',
-                    value: 3,
+                    name: 'married?',
+                    value: person.partnerId !== null ? 'Yes' : 'No',
                   },
                 ]}
                 onClick={() => this.handlePersonClick(person)}
@@ -170,7 +170,8 @@ export default class Home extends React.Component {
       this.state.pets.length > 0
         ? this.state.pets.map(pet => {
             return (
-              <div>
+              <div className="pet-container">
+                <img src={pet.avatar} alt={pet.avatar} />
                 <span>{pet.name}</span>
               </div>
             );
@@ -192,7 +193,7 @@ export default class Home extends React.Component {
             <div className="app-modal-item img-container">
               <img src={this.state.selectedPerson.avatar} alt={this.state.selectedPerson.avatar} />
             </div>
-            <div>{petsDiv}</div>
+            <div className="app-modal-item img-container">{petsDiv}</div>
           </div>
         </div>
       ) : null;
