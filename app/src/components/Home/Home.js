@@ -23,6 +23,7 @@ export default class Home extends React.Component {
       pets: [],
       showModal: false,
       selectedPerson: null,
+      selectedPersonPartner: null,
     };
 
     PersonService.getPersons().then(persons => {
@@ -65,10 +66,13 @@ export default class Home extends React.Component {
   };
 
   handlePersonClick = person => {
+    const partner =
+      person.partnerId !== null ? this.state.persons.find(partner => person.partnerId === partner.id) : null;
     PetService.getPets(person).then(resp => {
       this.setState(() => ({
         showModal: true,
         selectedPerson: person,
+        selectedPersonPartner: partner,
         pets: resp,
       }));
     });
@@ -78,6 +82,7 @@ export default class Home extends React.Component {
     this.setState(() => ({
       showModal: false,
       selectedPerson: null,
+      selectedPersonPartner: null,
       pets: [],
     }));
   };
@@ -166,6 +171,25 @@ export default class Home extends React.Component {
           })
         : null;
 
+    const partnerDiv = (
+      <div>
+        <Button className="btn-light">
+          {this.state.selectedPersonPartner !== null ? this.state.selectedPersonPartner.name : '<= marry'}
+        </Button>
+      </div>
+    );
+
+    const personDiv =
+      this.state.selectedPerson !== null ? (
+        <div className="person-container">
+          <img src={this.state.selectedPerson.avatar} alt={this.state.selectedPerson.avatar} />
+          <div className="partner-container">
+            <span>Relationship status:</span>
+            {partnerDiv}
+          </div>
+        </div>
+      ) : null;
+
     const petsDiv =
       this.state.pets.length > 0
         ? this.state.pets.map(pet => {
@@ -190,9 +214,7 @@ export default class Home extends React.Component {
             <h5 className="app-modal-item">
               {this.state.selectedPerson.firstName} {this.state.selectedPerson.lastName}
             </h5>
-            <div className="app-modal-item img-container">
-              <img src={this.state.selectedPerson.avatar} alt={this.state.selectedPerson.avatar} />
-            </div>
+            <div className="app-modal-item img-container">{personDiv}</div>
             <div className="app-modal-item img-container">{petsDiv}</div>
           </div>
         </div>
