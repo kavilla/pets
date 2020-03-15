@@ -7,7 +7,7 @@ from utils import generate_response, generate_message_response, generate_error_r
 
 app = Flask(__name__)
 app.config['SWAGGER'] = {
-    'title': 'Yogi API',
+    'title': 'Pet API',
     'description': 'Simple API for marrying partners and adopting pets.',
     "termsOfService": None,
     "version": "1.0.1"

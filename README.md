@@ -12,11 +12,6 @@ Objectives:
 	3. A couple gets married
 	4. A person gets pets
 	5. A person passes away, and their pets go to their partner, or to null owner if they have no partner
-6. A front end view isn't required, but if you'd like to add one, we'd be more than happy to use it!
-
-Support:
-- Contact Chad Becker at chad@meetyogi.com if you have any questions or discover any problems
-- We're looking to see how you approach the problem, document your assumptions, design your solution, and communicate the results.
 
 ## Getting started
 
